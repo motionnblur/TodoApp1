@@ -16,7 +16,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1
-      - POSTGRES_DB=gamemasters
+      - POSTGRES_DB=todoapp
     volumes:
       - pgdata:/var/lib/postgresql/data
 
