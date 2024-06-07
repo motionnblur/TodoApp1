@@ -14,10 +14,6 @@ public class TodoEntityController {
 
     @GetMapping("/hello")
     private ResponseEntity<String> getHello(){
-        try{
-            return new ResponseEntity<>("Hello", HttpStatus.ACCEPTED);
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>("Hello", HttpStatus.ACCEPTED);
     }
 }
