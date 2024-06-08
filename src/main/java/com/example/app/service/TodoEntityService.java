@@ -35,4 +35,10 @@ public class TodoEntityService {
 
         todoEntityRepository.save(todoEntityToUpdate);
     }
+    public TodoEntity getTodoEntity(String todoEntityName) throws Exception {
+        TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoEntityName);
+        if(todoEntity == null) throw new Exception("A todo with that name couldn't found");
+        
+        return todoEntity;
+    }
 }

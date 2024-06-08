@@ -42,4 +42,13 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping
+    private ResponseEntity<?> getTodo(@RequestParam String todoName){
+        try{
+            TodoEntity todoEntity = todoEntityService.getTodoEntity(todoName);
+            return new ResponseEntity<>(todoEntity, HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
