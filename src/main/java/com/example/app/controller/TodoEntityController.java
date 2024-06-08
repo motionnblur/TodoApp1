@@ -9,11 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("todo")
 public class TodoEntityController {
     @Autowired
     protected TodoEntityService todoEntityService;
 
-    @PutMapping("/add")
+    @PutMapping
     private ResponseEntity<?> addTodo(@RequestBody TodoEntityDto todoEntityDto){
         try{
             TodoEntity todoEntitySaved = todoEntityService.saveTodoEntity(todoEntityDto);
@@ -22,7 +23,7 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @DeleteMapping("/delete")
+    @DeleteMapping
     private ResponseEntity<?> deleteTodo(@RequestParam String todoName){
         try{
             TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoName);
@@ -30,10 +31,5 @@ public class TodoEntityController {
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @GetMapping("/hello")
-    private ResponseEntity<String> getHello(){
-        return new ResponseEntity<>("Hello", HttpStatus.ACCEPTED);
     }
 }
