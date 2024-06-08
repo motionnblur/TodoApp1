@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TodoEntityRepository extends JpaRepository<TodoEntity, Long> {
+    TodoEntity findByTodoName(String todoName);
 }

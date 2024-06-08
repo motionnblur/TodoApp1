@@ -20,4 +20,10 @@ public class TodoEntityService {
 
         return todoEntityRepository.save(todoEntityTemp);
     }
+    public TodoEntity deleteTodoEntity(String todoEntityName){
+        TodoEntity todoEntityToDelete = todoEntityRepository.findByTodoName(todoEntityName);
+        todoEntityRepository.delete(todoEntityToDelete);
+
+        return todoEntityToDelete;
+    }
 }
