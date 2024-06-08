@@ -13,8 +13,10 @@ public class TodoEntityService {
 
     public TodoEntity saveTodoEntity(TodoEntityDto todoEntityDto){
         TodoEntity todoEntityTemp = new TodoEntity();
-        todoEntityTemp.setCompleted(false);
+
+        todoEntityTemp.setTodoName(todoEntityDto.getTodoName());
         todoEntityTemp.setTodoBody(todoEntityDto.getTodoBody());
+        todoEntityTemp.setCompleted(false);
 
         return todoEntityRepository.save(todoEntityTemp);
     }

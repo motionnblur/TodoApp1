@@ -18,6 +18,7 @@ public class TodoEntity {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    private String todoName;
     private String todoBody;
     private boolean isCompleted;
 }

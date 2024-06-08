@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,7 +17,7 @@ public class TodoEntityController {
     protected TodoEntityService todoEntityService;
 
     @PostMapping("/add")
-    private ResponseEntity<?> addTodo(TodoEntityDto todoEntityDto){
+    private ResponseEntity<?> addTodo(@RequestBody TodoEntityDto todoEntityDto){
         try{
             TodoEntity todoEntitySaved = todoEntityService.saveTodoEntity(todoEntityDto);
             return new ResponseEntity<>(todoEntitySaved, HttpStatus.CREATED);
