@@ -1,6 +1,7 @@
 package com.example.app.service;
 
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.TodoEntityUpdateDto;
 import com.example.app.entity.TodoEntity;
 import com.example.app.repository.TodoEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,13 @@ public class TodoEntityService {
         todoEntityRepository.delete(todoEntityToDelete);
 
         return todoEntityToDelete;
+    }
+    public void updateTodoEntity(TodoEntityUpdateDto todoEntityUpdateDto){
+        TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityUpdateDto.getTodoName());
+
+        todoEntityToUpdate.setTodoName(todoEntityUpdateDto.getUpdate().getTodoName());
+        todoEntityToUpdate.setTodoBody(todoEntityUpdateDto.getUpdate().getTodoBody());
+
+        todoEntityRepository.save(todoEntityToUpdate);
     }
 }
