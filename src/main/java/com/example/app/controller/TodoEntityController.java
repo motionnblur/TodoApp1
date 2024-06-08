@@ -6,17 +6,14 @@ import com.example.app.service.TodoEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class TodoEntityController {
     @Autowired
     protected TodoEntityService todoEntityService;
 
-    @PostMapping("/add")
+    @PutMapping("/add")
     private ResponseEntity<?> addTodo(@RequestBody TodoEntityDto todoEntityDto){
         try{
             TodoEntity todoEntitySaved = todoEntityService.saveTodoEntity(todoEntityDto);
