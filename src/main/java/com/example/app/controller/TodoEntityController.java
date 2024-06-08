@@ -6,21 +6,27 @@ import com.example.app.service.TodoEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class TodoEntityController {
     @Autowired
     protected TodoEntityService todoEntityService;
 
-    @PostMapping("/add")
+    @PutMapping("/add")
     private ResponseEntity<?> addTodo(@RequestBody TodoEntityDto todoEntityDto){
         try{
             TodoEntity todoEntitySaved = todoEntityService.saveTodoEntity(todoEntityDto);
             return new ResponseEntity<>(todoEntitySaved, HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @DeleteMapping("/delete")
+    private ResponseEntity<?> deleteTodo(@RequestParam String todoName){
+        try{
+            TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoName);
+            return new ResponseEntity<>(todoEntityDeleted, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
