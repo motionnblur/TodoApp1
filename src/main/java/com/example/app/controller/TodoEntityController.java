@@ -23,12 +23,12 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @DeleteMapping
-    private ResponseEntity<?> deleteTodo(@RequestParam String todoName){
+    @GetMapping
+    private ResponseEntity<?> getTodo(@RequestParam String todoName){
         try{
-            TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoName);
-            return new ResponseEntity<>(todoEntityDeleted, HttpStatus.OK);
-        }catch (Exception e){
+            TodoEntity todoEntity = todoEntityService.getTodoEntity(todoName);
+            return new ResponseEntity<>(todoEntity, HttpStatus.OK);
+        }catch(Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -41,12 +41,12 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping
-    private ResponseEntity<?> getTodo(@RequestParam String todoName){
+    @DeleteMapping
+    private ResponseEntity<?> deleteTodo(@RequestParam String todoName){
         try{
-            TodoEntity todoEntity = todoEntityService.getTodoEntity(todoName);
-            return new ResponseEntity<>(todoEntity, HttpStatus.OK);
-        }catch(Exception e){
+            TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoName);
+            return new ResponseEntity<>(todoEntityDeleted, HttpStatus.OK);
+        }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
