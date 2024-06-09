@@ -1,7 +1,6 @@
 package com.example.app.service;
 
 import com.example.app.dto.TodoEntityDto;
-import com.example.app.dto.TodoEntityUpdateDto;
 import com.example.app.entity.TodoEntity;
 import com.example.app.repository.TodoEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ public class TodoEntityService {
         TodoEntity todoEntityTemp = new TodoEntity();
 
         todoEntityTemp.setTodoName(todoEntityDto.getTodoName());
-        todoEntityTemp.setTodoBody(todoEntityDto.getTodoBody());
+        todoEntityTemp.setTodoItems(todoEntityDto.getTodoItems());
         todoEntityTemp.setCompleted(false);
 
         return todoEntityRepository.save(todoEntityTemp);
@@ -27,11 +26,11 @@ public class TodoEntityService {
 
         return todoEntityToDelete;
     }
-    public void updateTodoEntity(TodoEntityUpdateDto todoEntityUpdateDto){
-        TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityUpdateDto.getTodoName());
+    public void updateTodoEntity(TodoEntityDto todoEntityDto){
+        TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityDto.getTodoName());
 
-        todoEntityToUpdate.setTodoName(todoEntityUpdateDto.getUpdate().getTodoName());
-        todoEntityToUpdate.setTodoBody(todoEntityUpdateDto.getUpdate().getTodoBody());
+        todoEntityToUpdate.setTodoName(todoEntityDto.getTodoName());
+        todoEntityToUpdate.setTodoItems(todoEntityDto.getTodoItems());
 
         todoEntityRepository.save(todoEntityToUpdate);
     }

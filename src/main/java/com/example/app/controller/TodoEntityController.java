@@ -1,7 +1,6 @@
 package com.example.app.controller;
 
 import com.example.app.dto.TodoEntityDto;
-import com.example.app.dto.TodoEntityUpdateDto;
 import com.example.app.entity.TodoEntity;
 import com.example.app.service.TodoEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +33,9 @@ public class TodoEntityController {
         }
     }
     @PostMapping
-    private ResponseEntity<?> changeTodo(@RequestBody TodoEntityUpdateDto todoEntityUpdateDto){
+    private ResponseEntity<?> changeTodo(@RequestBody TodoEntityDto todoEntityDto){
         try{
-            todoEntityService.updateTodoEntity(todoEntityUpdateDto);
+            todoEntityService.updateTodoEntity(todoEntityDto);
             return new ResponseEntity<>("successfully updated", HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
