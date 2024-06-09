@@ -6,6 +6,6 @@ import java.util.List;
 
 @Getter
 public class TodoEntityDto {
-    private String todoName;
-    private List<String> todoItems;
+    private String name;
+    private List<String> items;
 }

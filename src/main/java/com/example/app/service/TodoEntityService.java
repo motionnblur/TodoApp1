@@ -14,8 +14,8 @@ public class TodoEntityService {
     public TodoEntity saveTodoEntity(TodoEntityDto todoEntityDto){
         TodoEntity todoEntityTemp = new TodoEntity();
 
-        todoEntityTemp.setTodoName(todoEntityDto.getTodoName());
-        todoEntityTemp.setTodoItems(todoEntityDto.getTodoItems());
+        todoEntityTemp.setTodoName(todoEntityDto.getName());
+        todoEntityTemp.setTodoItems(todoEntityDto.getItems());
         todoEntityTemp.setCompleted(false);
 
         return todoEntityRepository.save(todoEntityTemp);
@@ -27,10 +27,10 @@ public class TodoEntityService {
         return todoEntityToDelete;
     }
     public void updateTodoEntity(TodoEntityDto todoEntityDto){
-        TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityDto.getTodoName());
+        TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityDto.getName());
 
-        todoEntityToUpdate.setTodoName(todoEntityDto.getTodoName());
-        todoEntityToUpdate.setTodoItems(todoEntityDto.getTodoItems());
+        todoEntityToUpdate.setTodoName(todoEntityDto.getName());
+        todoEntityToUpdate.setTodoItems(todoEntityDto.getItems());
 
         todoEntityRepository.save(todoEntityToUpdate);
     }
