@@ -1,6 +1,7 @@
 package com.example.app.controller;
 
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.TodoEntityUpdateDto;
 import com.example.app.entity.TodoEntity;
 import com.example.app.service.TodoEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("todo")
 public class TodoEntityController {
     @Autowired
     protected TodoEntityService todoEntityService;
 
-    @PutMapping("/add")
+    @PutMapping
     private ResponseEntity<?> addTodo(@RequestBody TodoEntityDto todoEntityDto){
         try{
             TodoEntity todoEntitySaved = todoEntityService.saveTodoEntity(todoEntityDto);
@@ -22,7 +24,7 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @DeleteMapping("/delete")
+    @DeleteMapping
     private ResponseEntity<?> deleteTodo(@RequestParam String todoName){
         try{
             TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoName);
@@ -31,9 +33,22 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-    @GetMapping("/hello")
-    private ResponseEntity<String> getHello(){
-        return new ResponseEntity<>("Hello", HttpStatus.ACCEPTED);
+    @PostMapping
+    private ResponseEntity<?> changeTodo(@RequestBody TodoEntityUpdateDto todoEntityUpdateDto){
+        try{
+            todoEntityService.updateTodoEntity(todoEntityUpdateDto);
+            return new ResponseEntity<>("successfully updated", HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping
+    private ResponseEntity<?> getTodo(@RequestParam String todoName){
+        try{
+            TodoEntity todoEntity = todoEntityService.getTodoEntity(todoName);
+            return new ResponseEntity<>(todoEntity, HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
