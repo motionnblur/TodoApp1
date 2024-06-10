@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @Getter
@@ -19,6 +21,6 @@ public class TodoEntity {
     private Long id;
 
     private String todoName;
-    private String todoBody;
+    private List<String> todoItems;
     private boolean isCompleted;
 }

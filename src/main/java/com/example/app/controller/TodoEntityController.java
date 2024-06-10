@@ -1,7 +1,6 @@
 package com.example.app.controller;
 
 import com.example.app.dto.TodoEntityDto;
-import com.example.app.dto.TodoEntityUpdateDto;
 import com.example.app.entity.TodoEntity;
 import com.example.app.service.TodoEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,30 +23,30 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @DeleteMapping
-    private ResponseEntity<?> deleteTodo(@RequestParam String todoName){
-        try{
-            TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoName);
-            return new ResponseEntity<>(todoEntityDeleted, HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-    @PostMapping
-    private ResponseEntity<?> changeTodo(@RequestBody TodoEntityUpdateDto todoEntityUpdateDto){
-        try{
-            todoEntityService.updateTodoEntity(todoEntityUpdateDto);
-            return new ResponseEntity<>("successfully updated", HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
     @GetMapping
     private ResponseEntity<?> getTodo(@RequestParam String todoName){
         try{
             TodoEntity todoEntity = todoEntityService.getTodoEntity(todoName);
             return new ResponseEntity<>(todoEntity, HttpStatus.OK);
         }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping
+    private ResponseEntity<?> changeTodo(@RequestBody TodoEntityDto todoEntityDto){
+        try{
+            todoEntityService.updateTodoEntity(todoEntityDto);
+            return new ResponseEntity<>("successfully updated", HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @DeleteMapping
+    private ResponseEntity<?> deleteTodo(@RequestParam String todoName){
+        try{
+            TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoName);
+            return new ResponseEntity<>(todoEntityDeleted, HttpStatus.OK);
+        }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

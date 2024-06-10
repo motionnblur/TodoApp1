@@ -2,8 +2,10 @@ package com.example.app.dto;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class TodoEntityDto {
-    private String todoName;
-    private String todoBody;
+    private String name;
+    private List<String> items;
 }
