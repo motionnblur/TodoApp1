@@ -50,4 +50,13 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/addItem")
+    private ResponseEntity<?> addItem(@RequestParam String todoName, @RequestParam String item){
+        try{
+            todoEntityService.addTodoItem(todoName, item);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
