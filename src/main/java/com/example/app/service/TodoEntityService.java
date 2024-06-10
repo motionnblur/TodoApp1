@@ -40,4 +40,9 @@ public class TodoEntityService {
         
         return todoEntity;
     }
+    public void addTodoItem(String todoName, String item){
+        TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
+        todoEntity.getTodoItems().add(item);
+        todoEntityRepository.save(todoEntity);
+    }
 }
