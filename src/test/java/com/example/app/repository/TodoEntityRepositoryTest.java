@@ -65,5 +65,7 @@ class TodoEntityRepositoryTest {
         TodoEntity savedTodoEntity = todoEntityRepository.save(todoEntityTemp);
         assertNotNull(savedTodoEntity);
         assertEquals(savedTodoEntity.getTodoName(), "Can");
+        assertEquals(savedTodoEntity.getTodoItems().get(0), "item1");
+        assertEquals(savedTodoEntity.getTodoItems().get(1), "item2");
     }
 }
