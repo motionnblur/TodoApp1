@@ -2,11 +2,13 @@ package com.example.app.helper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+@Component
 public class ReaderHelper {
     public String getStringFromInputStream(HttpServletRequest req){
         StringBuilder stringBuilder = new StringBuilder();

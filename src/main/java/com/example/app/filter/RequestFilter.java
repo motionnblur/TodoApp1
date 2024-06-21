@@ -3,6 +3,7 @@ package com.example.app.filter;
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
 import com.example.app.helper.ReaderHelper;
+import com.example.app.helper.StringHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,11 @@ import java.io.InputStreamReader;
 
 @Component
 public class RequestFilter implements Filter {
+    @Autowired ReaderHelper readerHelper;
+    @Autowired StringHelper stringHelper;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @Order(1)
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -29,10 +35,10 @@ public class RequestFilter implements Filter {
         if(!"application/json".equalsIgnoreCase(multiReadHttpServletRequest.getContentType()))
             return;
 
-        String requestBodyAsString = (new ReaderHelper()).getStringFromInputStream(multiReadHttpServletRequest);
-        TodoEntityDto todoEntityDto = (new ObjectMapper()).readValue(requestBodyAsString, TodoEntityDto.class);
+        String requestBodyAsString = readerHelper.getStringFromInputStream(multiReadHttpServletRequest);
+        TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
 
-        if (checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, todoEntityDto.getName().length())) {
+        if (stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, todoEntityDto.getName().length())) {
             chain.doFilter(multiReadHttpServletRequest, response);
             return;
         }
@@ -41,7 +47,5 @@ public class RequestFilter implements Filter {
         res.getWriter().write("Todo name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
     }
 
-    private boolean checkIfStringLengthLessThan(int expectedLength, int strLen) {
-        return strLen <= expectedLength;
-    }
+
 }
