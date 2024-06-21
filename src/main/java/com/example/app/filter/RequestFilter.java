@@ -1,5 +1,6 @@
 package com.example.app.filter;
 
+import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
 import com.example.app.helper.ReaderHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,13 +32,13 @@ public class RequestFilter implements Filter {
         String requestBodyAsString = (new ReaderHelper()).getStringFromInputStream(multiReadHttpServletRequest);
         TodoEntityDto todoEntityDto = (new ObjectMapper()).readValue(requestBodyAsString, TodoEntityDto.class);
 
-        if (checkIfStringLengthLessThan(30, todoEntityDto.getName().length())) {
+        if (checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, todoEntityDto.getName().length())) {
             chain.doFilter(multiReadHttpServletRequest, response);
             return;
         }
 
         res.setStatus(HttpStatus.BAD_REQUEST.value());
-        res.getWriter().write("Todo name length can't be more than "+ 30 +" !");
+        res.getWriter().write("Todo name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
     }
 
     private boolean checkIfStringLengthLessThan(int expectedLength, int strLen) {
