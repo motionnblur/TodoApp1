@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 public class SecurityHelper {
-    private final StringHelper stringHelper;
+    private StringHelper stringHelper;
     public SecurityHelper(){
         this.stringHelper = new StringHelper();
     }
