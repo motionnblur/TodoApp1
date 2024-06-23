@@ -1,4 +1,4 @@
-package com.example.app.filter;
+package com.example.app.helper;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
@@ -8,10 +8,10 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 import java.io.*;
 
-public class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
+public class HttpServletRequestHelper extends HttpServletRequestWrapper {
     private ByteArrayOutputStream cachedBytes;
 
-    public MultiReadHttpServletRequest(HttpServletRequest request) {
+    public HttpServletRequestHelper(HttpServletRequest request) {
         super(request);
     }
 
