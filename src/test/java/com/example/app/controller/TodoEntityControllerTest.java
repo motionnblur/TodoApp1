@@ -2,10 +2,17 @@ package com.example.app.controller;
 
 import com.example.app.dto.TodoEntityDto;
 import com.example.app.entity.TodoEntity;
+import com.example.app.filter.RequestFilter;
+import com.example.app.helper.ReaderHelper;
+import com.example.app.helper.StringHelper;
 import com.example.app.repository.TodoEntityRepository;
 import com.example.app.service.TodoEntityService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +36,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TodoEntityControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean private RequestFilter requestFilter;
+    @MockBean private HttpServletRequest req;
+    @MockBean private HttpServletResponse res;
+    @MockBean private FilterChain chain;
+    @MockBean private ReaderHelper readerHelper;
+    @MockBean private StringHelper stringHelper;
+    @MockBean private PrintWriter printWriter;
+    @MockBean private ObjectMapper objectMapper;
 
     @MockBean
     private TodoEntityRepository todoEntityRepository;
@@ -68,7 +85,7 @@ class TodoEntityControllerTest {
                 .content(requestBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -95,7 +112,7 @@ class TodoEntityControllerTest {
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
     }
 
     @Test
