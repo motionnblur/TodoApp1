@@ -58,7 +58,6 @@ class RequestFilterTest {
         String str = "{\"name\": \"sssssssssssssssssssssssssssssss\", \"items\": [\"Elma\", \"Havuç\", \"Armut\"]}";
 
         when(readerHelper.getStringFromInputStream(any(HttpServletRequest.class))).thenReturn(str);
-        when(stringHelper.checkIfStringLengthLessThan(any(Integer.class), any(Integer.class))).thenReturn(false);
         when(res.getWriter()).thenReturn(printWriter);
 
         filter.doFilter(req, res, chain);
