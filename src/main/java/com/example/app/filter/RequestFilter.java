@@ -2,7 +2,9 @@ package com.example.app.filter;
 
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.helper.HttpServletRequestHelper;
 import com.example.app.helper.ReaderHelper;
+import com.example.app.helper.SecurityHelper;
 import com.example.app.helper.StringHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
@@ -13,15 +15,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.List;
 
 @Component
 public class RequestFilter implements Filter {
     @Autowired ReaderHelper readerHelper;
-    @Autowired StringHelper stringHelper;
 
+    SecurityHelper securityHelper = new SecurityHelper();
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Order(1)
@@ -30,20 +31,20 @@ public class RequestFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         // The important part!! wrap the request:
-        MultiReadHttpServletRequest multiReadHttpServletRequest = new MultiReadHttpServletRequest(req);
+        HttpServletRequestHelper httpServletRequestHelper = new HttpServletRequestHelper(req);
 
-        if(!"application/json".equalsIgnoreCase(multiReadHttpServletRequest.getContentType()))
+        if(!"application/json".equalsIgnoreCase(httpServletRequestHelper.getContentType()))
             return;
 
-        String requestBodyAsString = readerHelper.getStringFromInputStream(multiReadHttpServletRequest);
+        String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
         TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
 
-        if (stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, todoEntityDto.getName().length())) {
-            chain.doFilter(multiReadHttpServletRequest, response);
+        if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+            chain.doFilter(httpServletRequestHelper, response);
             return;
         }
 
         res.setStatus(HttpStatus.BAD_REQUEST.value());
-        res.getWriter().write("Todo name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
+        res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
     }
 }
