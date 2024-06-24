@@ -2,19 +2,18 @@ package com.example.app.helper;
 
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class SecurityHelper {
-    private StringHelper stringHelper;
-    public SecurityHelper(){
-        this.stringHelper = new StringHelper();
-    }
+    private final StringHelper stringHelper = new StringHelper();
 
     public boolean securityCheckTodoEntity(TodoEntityDto dto){
         String name = dto.getName();
         List<String> items = dto.getItems();
+
+        if(items.size() > GlobalDataHolder.maxTodoItemCount)
+            return false;
 
         boolean nameCheckRes = stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, name.length());
         if(!nameCheckRes) return false;
