@@ -50,6 +50,9 @@ public class RequestFilter implements Filter {
             }else if(requestUrl.equals("http://localhost:8080/todo/addItem")){
                 chain.doFilter(httpServletRequestHelper, response);
                 return;
+            }else if(requestUrl.equals("http://localhost:8080/todo/deleteItem")){
+                chain.doFilter(httpServletRequestHelper, response);
+                return;
             }
         }else if(req.getMethod().equals("PUT")){
             if(!"application/json".equalsIgnoreCase(httpServletRequestHelper.getContentType())){
