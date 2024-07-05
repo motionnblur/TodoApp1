@@ -45,4 +45,25 @@ public class TodoEntityService {
         todoEntity.getTodoItems().add(item);
         todoEntityRepository.save(todoEntity);
     }
+    public void deleteTodoItem(String todoName, String itemToDelete) throws Exception {
+        TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
+//        String itemToDelete = null;
+//        int itemIndis = 0;
+//
+//        for(String item : todoEntity.getTodoItems()){
+//            itemIndis++;
+//            if(item.equals(todoItem)){
+//                itemToDelete = item;
+//                break;
+//            }
+//        }
+//        if(itemToDelete == null)
+//            throw new Exception("Todo item couldn't found");
+
+        boolean deleteStatus = todoEntity.getTodoItems().remove(itemToDelete);
+        if(!deleteStatus)
+            throw new Exception("Todo item couldn't be deleted");
+
+        todoEntityRepository.save(todoEntity);
+    }
 }
