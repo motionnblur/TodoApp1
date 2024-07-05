@@ -33,18 +33,62 @@ public class RequestFilter implements Filter {
         // The important part!! wrap the request:
         HttpServletRequestHelper httpServletRequestHelper = new HttpServletRequestHelper(req);
 
-        if(!"application/json".equalsIgnoreCase(httpServletRequestHelper.getContentType()))
+        String requestUrl = req.getRequestURL().toString();
+
+        if(req.getMethod().equals("POST")){
+            if(requestUrl.equals("http://localhost:8080/todo")){
+                String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
+                TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
+
+                if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+                    chain.doFilter(httpServletRequestHelper, response);
+                    return;
+                }
+
+                res.setStatus(HttpStatus.BAD_REQUEST.value());
+                res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
+            }else if(requestUrl.equals("http://localhost:8080/todo/addItem")){
+                chain.doFilter(httpServletRequestHelper, response);
+                return;
+            }
+        }else if(req.getMethod().equals("PUT")){
+            if(!"application/json".equalsIgnoreCase(httpServletRequestHelper.getContentType())){
+                res.setStatus(HttpStatus.BAD_REQUEST.value());
+                res.getWriter().write("should have application/json");
+                return;
+            }
+
+            String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
+            TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
+
+            if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+                chain.doFilter(httpServletRequestHelper, response);
+                return;
+            }
+
+            res.setStatus(HttpStatus.BAD_REQUEST.value());
+            res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
+        }else if(req.getMethod().equals("GET")){
+            chain.doFilter(httpServletRequestHelper, response);
             return;
-
-        String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
-        TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
-
-        if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+        }
+        else if(req.getMethod().equals("DELETE")){
             chain.doFilter(httpServletRequestHelper, response);
             return;
         }
 
         res.setStatus(HttpStatus.BAD_REQUEST.value());
-        res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
+        res.getWriter().write("Bad request");
+
+//        String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
+//        TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
+//
+//        if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+//            chain.doFilter(httpServletRequestHelper, response);
+//            return;
+//        }
+//
+//        res.setStatus(HttpStatus.BAD_REQUEST.value());
+//        res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
     }
 }
