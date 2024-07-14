@@ -26,8 +26,9 @@ public class TodoEntityService {
 
         return todoEntityToDelete;
     }
-    public void updateTodoEntity(TodoEntityDto todoEntityDto){
+    public void updateTodoEntity(TodoEntityDto todoEntityDto) throws Exception {
         TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityDto.getName());
+        if(todoEntityToUpdate == null) throw new Exception("Todo to delete couldn't found");
 
         todoEntityToUpdate.setTodoName(todoEntityDto.getName());
         todoEntityToUpdate.setTodoItems(todoEntityDto.getItems());
