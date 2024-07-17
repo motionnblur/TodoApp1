@@ -72,25 +72,20 @@ public class RequestFilter implements Filter {
             res.setStatus(HttpStatus.BAD_REQUEST.value());
             res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
         }else if(req.getMethod().equals("GET") || req.getMethod().equals("DELETE")){
+            StringHelper stringHelper = new StringHelper();
+
             String queryStr = httpServletRequestHelper.getParameter("todoName");
-            System.out.println(queryStr);
+            if(stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, queryStr.length()))
+            {
+                chain.doFilter(httpServletRequestHelper, response);
+                return;
+            }
 
-            chain.doFilter(httpServletRequestHelper, response);
-            return;
+            res.setStatus(HttpStatus.BAD_REQUEST.value());
+            res.getWriter().write("Todo name can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
+        }else {
+            res.setStatus(HttpStatus.BAD_REQUEST.value());
+            res.getWriter().write("Bad request");
         }
-
-        res.setStatus(HttpStatus.BAD_REQUEST.value());
-        res.getWriter().write("Bad request");
-
-//        String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
-//        TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
-//
-//        if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
-//            chain.doFilter(httpServletRequestHelper, response);
-//            return;
-//        }
-//
-//        res.setStatus(HttpStatus.BAD_REQUEST.value());
-//        res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
     }
 }
