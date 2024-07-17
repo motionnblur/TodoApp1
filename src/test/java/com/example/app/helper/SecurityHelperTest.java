@@ -2,7 +2,9 @@ package com.example.app.helper;
 
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.TodoItemDto;
 import com.example.app.entity.TodoEntity;
+import com.example.app.entity.TodoItemEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -21,18 +23,30 @@ class SecurityHelperTest {
         String todoNameThatHasLengthEqualsToMax = "s".repeat(GlobalDataHolder.maxTodoNameLength);
         String todoNameThatHasLengthMoreThanMax = "s".repeat(GlobalDataHolder.maxTodoNameLength+1);
 
-        List<String> todoListThatHasLengthLessThanMax = new ArrayList<>();
-        List<String> todoListThatHasLengthEqualsToMax = new ArrayList<>();
-        List<String> todoListThatHasLengthMoreThanMax = new ArrayList<>();
+        List<TodoItemDto> todoListThatHasLengthLessThanMax = new ArrayList<>();
+        List<TodoItemDto> todoListThatHasLengthEqualsToMax = new ArrayList<>();
+        List<TodoItemDto> todoListThatHasLengthMoreThanMax = new ArrayList<>();
 
         for(int l = 0; l < GlobalDataHolder.maxTodoItemCount-1; l++){
-            todoListThatHasLengthLessThanMax.add("s");
+            TodoItemDto todoItemDto = new TodoItemDto();
+            todoItemDto.setHasCompleted(false);
+            todoItemDto.setTodoBody("s".repeat(GlobalDataHolder.maxTodoNameLength-1));
+
+            todoListThatHasLengthLessThanMax.add(todoItemDto);
         }
         for(int l = 0; l < GlobalDataHolder.maxTodoItemCount; l++){
-            todoListThatHasLengthEqualsToMax.add("s");
+            TodoItemDto todoItemDto = new TodoItemDto();
+            todoItemDto.setHasCompleted(false);
+            todoItemDto.setTodoBody("s".repeat(GlobalDataHolder.maxTodoNameLength));
+
+            todoListThatHasLengthEqualsToMax.add(todoItemDto);
         }
         for(int l = 0; l < GlobalDataHolder.maxTodoItemCount+1; l++){
-            todoListThatHasLengthMoreThanMax.add("s");
+            TodoItemDto todoItemDto = new TodoItemDto();
+            todoItemDto.setHasCompleted(false);
+            todoItemDto.setTodoBody("s".repeat(GlobalDataHolder.maxTodoNameLength+1));
+
+            todoListThatHasLengthMoreThanMax.add(todoItemDto);
         }
 
         ////////////////////

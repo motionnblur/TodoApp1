@@ -2,6 +2,7 @@ package com.example.app.helper;
 
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.TodoItemDto;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class SecurityHelper {
 
     public boolean securityCheckTodoEntity(TodoEntityDto dto){
         String name = dto.getName();
-        List<String> items = dto.getItems();
+        List<TodoItemDto> items = dto.getItems();
 
         if(items.size() > GlobalDataHolder.maxTodoItemCount)
             return false;
@@ -18,8 +19,8 @@ public class SecurityHelper {
         boolean nameCheckRes = stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, name.length());
         if(!nameCheckRes) return false;
 
-        for(String s : items){
-            boolean res = stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, s.length());
+        for(TodoItemDto s : items){
+            boolean res = stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, s.getTodoBody().length());
             if(!res) return false;
         }
 

@@ -1,10 +1,15 @@
 package com.example.app.service;
 
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.TodoItemDto;
 import com.example.app.entity.TodoEntity;
+import com.example.app.entity.TodoItemEntity;
 import com.example.app.repository.TodoEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TodoEntityService {
@@ -13,10 +18,19 @@ public class TodoEntityService {
 
     public TodoEntity saveTodoEntity(TodoEntityDto todoEntityDto){
         TodoEntity todoEntityTemp = new TodoEntity();
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+
+        for(TodoItemDto dto : todoEntityDto.getItems()){
+            TodoItemEntity todoItemEntity = new TodoItemEntity();
+
+            todoItemEntity.setTodoBody(dto.getTodoBody());
+            todoItemEntity.setCompleted(dto.isHasCompleted());
+
+            todoItemEntities.add(todoItemEntity);
+        }
 
         todoEntityTemp.setTodoName(todoEntityDto.getName());
-        todoEntityTemp.setTodoItems(todoEntityDto.getItems());
-        todoEntityTemp.setCompleted(false);
+        todoEntityTemp.setTodoItemEntities(todoItemEntities);
 
         return todoEntityRepository.save(todoEntityTemp);
     }
@@ -28,40 +42,58 @@ public class TodoEntityService {
     }
     public void updateTodoEntity(TodoEntityDto todoEntityDto) throws Exception {
         TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityDto.getName());
-        if(todoEntityToUpdate == null) throw new Exception("Todo to delete couldn't found");
+        if(todoEntityToUpdate == null) throw new Exception("Todo to delete couldn't be found");
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+
+        for(TodoItemDto dto : todoEntityDto.getItems()){
+            TodoItemEntity todoItemEntity = new TodoItemEntity();
+
+            todoItemEntity.setTodoBody(dto.getTodoBody());
+            todoItemEntity.setCompleted(dto.isHasCompleted());
+
+            todoItemEntities.add(todoItemEntity);
+        }
 
         todoEntityToUpdate.setTodoName(todoEntityDto.getName());
-        todoEntityToUpdate.setTodoItems(todoEntityDto.getItems());
+        todoEntityToUpdate.setTodoItemEntities(todoItemEntities);
 
         todoEntityRepository.save(todoEntityToUpdate);
     }
     public TodoEntity getTodoEntity(String todoEntityName) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoEntityName);
-        if(todoEntity == null) throw new Exception("A todo with that name couldn't found");
+        if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
         
         return todoEntity;
     }
-    public void addTodoItem(String todoName, String item){
+    public void addTodoItem(String todoName, String item) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
-        todoEntity.getTodoItems().add(item);
+        if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
+
+        TodoItemEntity todoItemEntity = new TodoItemEntity();
+        todoItemEntity.setTodoBody(item);
+        todoItemEntity.setCompleted(false);
+
+        todoEntity.getTodoItemEntities().add(todoItemEntity);
         todoEntityRepository.save(todoEntity);
     }
     public void deleteTodoItem(String todoName, String itemToDelete) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
-//        String itemToDelete = null;
-//        int itemIndis = 0;
-//
-//        for(String item : todoEntity.getTodoItems()){
-//            itemIndis++;
-//            if(item.equals(todoItem)){
-//                itemToDelete = item;
-//                break;
-//            }
-//        }
-//        if(itemToDelete == null)
-//            throw new Exception("Todo item couldn't found");
+        if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
 
-        boolean deleteStatus = todoEntity.getTodoItems().remove(itemToDelete);
+        TodoItemEntity entityToBeDeleted = null;
+
+        for(TodoItemEntity e : todoEntity.getTodoItemEntities()){
+            if (e.getTodoBody().equals(itemToDelete)) {
+                entityToBeDeleted  = e;
+                break;
+            }
+        }
+
+        if(entityToBeDeleted == null)
+            throw new Exception("Todo item couldn't be found");
+
+        boolean deleteStatus = todoEntity.getTodoItemEntities().remove(entityToBeDeleted);
         if(!deleteStatus)
             throw new Exception("Todo item couldn't be deleted");
 

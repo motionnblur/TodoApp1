@@ -1,17 +1,15 @@
 package com.example.app.service;
 
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.TodoItemDto;
 import com.example.app.entity.TodoEntity;
+import com.example.app.entity.TodoItemEntity;
 import com.example.app.repository.TodoEntityRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,43 +26,68 @@ class TodoEntityServiceTest {
 
     @Test
     void saveTodoEntity() throws Exception {
-        List<String> todoItems = new ArrayList<>();
-        todoItems.add("item1");
-        todoItems.add("item2");
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
 
-        TodoEntityDto todoEntityDto = new TodoEntityDto();
-        todoEntityDto.setName("todo");
-        todoEntityDto.setItems(todoItems);
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
 
         TodoEntity todoEntity = new TodoEntity();
+        todoEntity.setTodoName("Todo1");
+        todoEntity.setTodoItemEntities(todoItemEntities);
 
-        todoEntity.setTodoName(todoEntityDto.getName());
-        todoEntity.setTodoItems(todoEntityDto.getItems());
-        todoEntity.setCompleted(false);
+        //////////////////////////
+
+        List<TodoItemDto> todoItemDtos = new ArrayList<>();
+
+        TodoItemDto todoItemDto1 = new TodoItemDto();
+        todoItemDto1.setTodoBody("Apple");
+        todoItemDto1.setHasCompleted(false);
+
+        TodoItemDto todoItemDto2 = new TodoItemDto();
+        todoItemDto2.setTodoBody("Orange");
+        todoItemDto2.setHasCompleted(true);
+
+        todoItemDtos.add(todoItemDto1);
+        todoItemDtos.add(todoItemDto2);
+
+        TodoEntityDto todoEntityDto = new TodoEntityDto();
+        todoEntityDto.setName("Todo1");
+        todoEntityDto.setItems(todoItemDtos);
 
         when(todoEntityRepository.save(any(TodoEntity.class))).thenReturn(todoEntity);
 
         TodoEntity todoEntitySaved = todoEntityService.saveTodoEntity(todoEntityDto);
 
         assertEquals(todoEntitySaved.getTodoName(), todoEntityDto.getName());
-        assertEquals(todoEntitySaved.getTodoItems(), todoEntityDto.getItems());
+        assertEquals(todoEntitySaved.getTodoItemEntities().size(), todoEntityDto.getItems().size());
+        assertEquals(todoEntitySaved.getTodoItemEntities().get(0).getTodoBody(), todoEntityDto.getItems().get(0).getTodoBody());
+        assertEquals(todoEntitySaved.getTodoItemEntities().get(1).getTodoBody(), todoEntityDto.getItems().get(1).getTodoBody());
     }
 
     @Test
     void deleteTodoEntity() throws Exception {
-        List<String> todoItems = new ArrayList<>();
-        todoItems.add("item1");
-        todoItems.add("item2");
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
 
-        TodoEntityDto todoEntityDto = new TodoEntityDto();
-        todoEntityDto.setName("todo");
-        todoEntityDto.setItems(todoItems);
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
 
         TodoEntity todoEntity = new TodoEntity();
-
-        todoEntity.setTodoName(todoEntityDto.getName());
-        todoEntity.setTodoItems(todoEntityDto.getItems());
-        todoEntity.setCompleted(false);
+        todoEntity.setTodoName("Todo1");
+        todoEntity.setTodoItemEntities(todoItemEntities);
 
         when(todoEntityRepository.findByTodoName(anyString())).thenReturn(todoEntity);
         TodoEntity todoEntityDeleted = todoEntityService.deleteTodoEntity(todoEntity.getTodoName());
@@ -74,52 +97,69 @@ class TodoEntityServiceTest {
 
     @Test
     void updateTodoEntity() throws Exception {
-        List<String> todoItems = new ArrayList<>();
-        todoItems.add("item1");
-        todoItems.add("item2");
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
 
-        TodoEntityDto todoEntityDto = new TodoEntityDto();
-        todoEntityDto.setName("todo");
-        todoEntityDto.setItems(todoItems);
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
 
         TodoEntity todoEntity = new TodoEntity();
+        todoEntity.setTodoName("Todo1");
+        todoEntity.setTodoItemEntities(todoItemEntities);
 
-        todoEntity.setTodoName(todoEntityDto.getName());
-        todoEntity.setTodoItems(todoEntityDto.getItems());
-        todoEntity.setCompleted(false);
+        //////////////////////////
+
+        List<TodoItemDto> todoItemDtos = new ArrayList<>();
+
+        TodoItemDto todoItemDto1 = new TodoItemDto();
+        todoItemDto1.setTodoBody("Apple");
+        todoItemDto1.setHasCompleted(false);
+
+        TodoItemDto todoItemDto2 = new TodoItemDto();
+        todoItemDto2.setTodoBody("Orange");
+        todoItemDto2.setHasCompleted(true);
+
+        todoItemDtos.add(todoItemDto1);
+        todoItemDtos.add(todoItemDto2);
+
+        TodoEntityDto todoEntityDto = new TodoEntityDto();
+        todoEntityDto.setName("Todo1");
+        todoEntityDto.setItems(todoItemDtos);
 
         when(todoEntityRepository.findByTodoName(anyString())).thenReturn(todoEntity);
 
-        List<String> newTodoItems = new ArrayList<>();
-        todoItems.add("new item1");
-        todoItems.add("new item2");
+        todoEntityService.updateTodoEntity(todoEntityDto);
+        TodoEntity t = todoEntityService.getTodoEntity(todoEntityDto.getName());
 
-        TodoEntityDto newTodoEntityDto = new TodoEntityDto();
-        newTodoEntityDto.setName("new todo");
-        newTodoEntityDto.setItems(newTodoItems);
-
-        todoEntityService.updateTodoEntity(newTodoEntityDto);
-        TodoEntity t = todoEntityService.getTodoEntity(newTodoEntityDto.getName());
-
-        assertEquals(t.getTodoName(), newTodoEntityDto.getName());
-        assertEquals(t.getTodoItems(), newTodoEntityDto.getItems());
+        assertEquals(t.getTodoName(), todoEntityDto.getName());
+        assertEquals(t.getTodoItemEntities().size(), todoEntityDto.getItems().size());
+        assertEquals(t.getTodoItemEntities().get(0).getTodoBody(), todoEntityDto.getItems().get(0).getTodoBody());
+        assertEquals(t.getTodoItemEntities().get(1).getTodoBody(), todoEntityDto.getItems().get(1).getTodoBody());
     }
 
     @Test
     void getTodoEntity() {
-        List<String> todoItems = new ArrayList<>();
-        todoItems.add("item1");
-        todoItems.add("item2");
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
 
-        TodoEntityDto todoEntityDto = new TodoEntityDto();
-        todoEntityDto.setName("todo");
-        todoEntityDto.setItems(todoItems);
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
 
         TodoEntity todoEntityToBeSaved = new TodoEntity();
-
-        todoEntityToBeSaved.setTodoName(todoEntityDto.getName());
-        todoEntityToBeSaved.setTodoItems(todoEntityDto.getItems());
-        todoEntityToBeSaved.setCompleted(false);
+        todoEntityToBeSaved.setTodoName("Todo1");
+        todoEntityToBeSaved.setTodoItemEntities(todoItemEntities);
 
         when(todoEntityRepository.findByTodoName(anyString())).thenReturn(todoEntityToBeSaved);
         TodoEntity todoEntityToBeGet = todoEntityRepository.findByTodoName(todoEntityToBeSaved.getTodoName());
@@ -130,26 +170,27 @@ class TodoEntityServiceTest {
 
     @Test
     void addTodoItem() throws Exception {
-        List<String> todoItems = new ArrayList<>();
-        todoItems.add("item1");
-        todoItems.add("item2");
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
 
-        TodoEntityDto todoEntityDto = new TodoEntityDto();
-        todoEntityDto.setName("todo");
-        todoEntityDto.setItems(todoItems);
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
 
         TodoEntity todoEntityToBeSaved = new TodoEntity();
-
-        todoEntityToBeSaved.setTodoName(todoEntityDto.getName());
-        todoEntityToBeSaved.setTodoItems(todoEntityDto.getItems());
-        todoEntityToBeSaved.setCompleted(false);
-
+        todoEntityToBeSaved.setTodoName("Todo1");
+        todoEntityToBeSaved.setTodoItemEntities(todoItemEntities);
         when(todoEntityRepository.findByTodoName(anyString())).thenReturn(todoEntityToBeSaved);
 
-        final String itemToBeAdded = "item3";
+        final String itemToBeAdded = "Pen";
         todoEntityService.addTodoItem(todoEntityToBeSaved.getTodoName(), itemToBeAdded);
 
         TodoEntity todoEntity = todoEntityService.getTodoEntity(todoEntityToBeSaved.getTodoName());
-        assertEquals(todoEntity.getTodoItems().get(2), itemToBeAdded);
+        assertEquals(todoEntity.getTodoItemEntities().get(2).getTodoBody(), itemToBeAdded);
     }
 }

@@ -2,7 +2,9 @@ package com.example.app.filter;
 
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.helper.HttpServletRequestHelper;
 import com.example.app.helper.ReaderHelper;
+import com.example.app.helper.SecurityHelper;
 import com.example.app.helper.StringHelper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -43,25 +48,46 @@ class RequestFilterTest {
         assertFalse(result2);
     }
 
-    @InjectMocks private RequestFilter filter;
-    @Mock private HttpServletRequest req;
-    @Mock private HttpServletResponse res;
-    @Mock private FilterChain chain;
-    @Mock private ReaderHelper readerHelper;
-    @Mock private StringHelper stringHelper;
-    @Mock private PrintWriter printWriter;
+    @Mock
+    private HttpServletRequest mockRequest;
+
+    @Mock
+    private HttpServletResponse mockResponse;
+
+    @Mock
+    private FilterChain mockFilterChain;
+
+    @Mock
+    private ReaderHelper readerHelper;
+
+    @Mock
+    private ObjectMapper objectMapper; // Autowired for convenience (optional)
+
+    @Mock
+    private SecurityHelper securityHelper;
+
+    @InjectMocks
+    private RequestFilter requestFilter;
 
     @Test
-    public void doFilter_Test() throws ServletException, IOException {
-        when(req.getContentType()).thenReturn("application/json");
+    public void testDoFilter_PutRequest_ValidJson_SecurityCheckPasses() throws IOException, ServletException {
+        // Mock request data
+        String requestUrl = "http://localhost:8080/todo";
+        String requestMethod = "PUT";
+        String validJson = "{\"name\": \"Todo1\",\"items\": [{\"todoBody\":\"Apple\",\"hasCompleted\": false},{\"todoBody\":\"Appleee\",\"hasCompleted\": true}]}";
+        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer(requestUrl));
+        when(mockRequest.getMethod()).thenReturn(requestMethod);
+        when(mockRequest.getContentType()).thenReturn("application/json");
 
-        String str = "{\"name\": \"sssssssssssssssssssssssssssssss\", \"items\": [\"Elma\", \"Havuç\", \"Armut\"]}";
+        // Mock reading request body
+        when(readerHelper.getStringFromInputStream(any(HttpServletRequestHelper.class))).thenReturn(validJson);
+        when(securityHelper.securityCheckTodoEntity(any(TodoEntityDto.class))).thenReturn(true);
 
-        when(readerHelper.getStringFromInputStream(any(HttpServletRequest.class))).thenReturn(str);
-        when(res.getWriter()).thenReturn(printWriter);
+        // Execute the filter
+        requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
 
-        filter.doFilter(req, res, chain);
-
-        verify(res).setStatus(HttpStatus.BAD_REQUEST.value());
+        // Verify chain is called
+        verify(mockFilterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(mockResponse, never()).setStatus(anyInt()); // No error status set
     }
 }

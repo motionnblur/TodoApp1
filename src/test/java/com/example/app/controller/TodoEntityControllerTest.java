@@ -1,7 +1,9 @@
 package com.example.app.controller;
 
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.TodoItemDto;
 import com.example.app.entity.TodoEntity;
+import com.example.app.entity.TodoItemEntity;
 import com.example.app.filter.RequestFilter;
 import com.example.app.helper.ReaderHelper;
 import com.example.app.helper.StringHelper;
@@ -12,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,14 +21,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,19 +62,21 @@ class TodoEntityControllerTest {
 
     @Test
     public void addTodo_ShouldReturn_CREATED() throws Exception {
-        List<String> todoItems = new ArrayList<>();
-        todoItems.add("item1");
-        todoItems.add("item2");
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
 
-        TodoEntityDto todoEntityDto = new TodoEntityDto();
-        todoEntityDto.setName("todo");
-        todoEntityDto.setItems(todoItems);
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
 
         TodoEntity todoEntity = new TodoEntity();
-
-        todoEntity.setTodoName(todoEntityDto.getName());
-        todoEntity.setTodoItems(todoEntityDto.getItems());
-        todoEntity.setCompleted(false);
+        todoEntity.setTodoItemEntities(todoItemEntities);
+        todoEntity.setTodoName("Todo1");
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(todoEntity);
@@ -90,19 +91,21 @@ class TodoEntityControllerTest {
 
     @Test
     public void changeTodo_ShouldReturn_OK() throws  Exception {
-        List<String> todoItems = new ArrayList<>();
-        todoItems.add("item1");
-        todoItems.add("item2");
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
 
-        TodoEntityDto todoEntityDto = new TodoEntityDto();
-        todoEntityDto.setName("todo");
-        todoEntityDto.setItems(todoItems);
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
 
         TodoEntity todoEntity = new TodoEntity();
-
-        todoEntity.setTodoName(todoEntityDto.getName());
-        todoEntity.setTodoItems(todoEntityDto.getItems());
-        todoEntity.setCompleted(false);
+        todoEntity.setTodoItemEntities(todoItemEntities);
+        todoEntity.setTodoName("Todo1");
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(todoEntity);
