@@ -14,9 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,32 +46,14 @@ class RequestFilterTest {
         assertFalse(result2);
     }
 
-    @Mock
-    private HttpServletRequest mockRequest;
-
-    @Mock
-    private HttpServletResponse mockResponse;
-
-    @Mock
-    private FilterChain mockFilterChain;
-
-    @Mock
-    private ReaderHelper readerHelper;
-
-    @Mock
-    private ObjectMapper objectMapper; // Autowired for convenience (optional)
-
-    @Mock
-    private SecurityHelper securityHelper;
-
-    @Mock
-    private HttpServletRequestHelper httpServletRequestHelper;
-
-    @Mock
-    private StringHelper stringHelper;
-
-    @InjectMocks
-    private RequestFilter requestFilter;
+    @Mock private HttpServletRequest mockRequest;
+    @Mock private HttpServletResponse mockResponse;
+    @Mock private FilterChain mockFilterChain;
+    @Mock private ReaderHelper readerHelper;
+    @Mock private SecurityHelper securityHelper;
+    @Mock private HttpServletRequestHelper httpServletRequestHelper;
+    @Mock private PrintWriter printWriter;
+    @InjectMocks private RequestFilter requestFilter;
 
     @Test
     public void testDoFilter_PutRequest_ValidJson_SecurityCheckPasses() throws IOException, ServletException {
@@ -98,6 +78,22 @@ class RequestFilterTest {
     }
 
     @Test
+    public void testDoFilter_PostRequest_ShouldReturn() throws IOException, ServletException{
+        String validJson = "{\"name\": \"Todo1\",\"items\": [{\"todoBody\":\"Apple\",\"hasCompleted\": false},{\"todoBody\":\"Appleee\",\"hasCompleted\": true}]}";
+
+        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/todo"));
+        when(mockRequest.getMethod()).thenReturn("POST");
+
+        when(readerHelper.getStringFromInputStream(any(HttpServletRequestHelper.class))).thenReturn(validJson);
+        when(securityHelper.securityCheckTodoEntity(any(TodoEntityDto.class))).thenReturn(true);
+
+        requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
+
+        verify(mockFilterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(mockResponse, never()).setStatus(anyInt());
+    }
+
+    @Test
     public void testDoFilter_GetRequest_ShouldReturn() throws IOException, ServletException{
         when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/todo"));
         when(mockRequest.getMethod()).thenReturn("GET");
@@ -109,5 +105,61 @@ class RequestFilterTest {
 
         verify(mockFilterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(mockResponse, never()).setStatus(anyInt()); // No error status set
+    }
+
+    @Test
+    public void testDoFilter_GetRequest_ShouldNotReturn() throws IOException, ServletException{
+        when(mockResponse.getWriter()).thenReturn(printWriter);
+
+        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/todo"));
+        when(mockRequest.getMethod()).thenReturn("GET");
+
+        String validTodoName = "s".repeat(GlobalDataHolder.maxTodoNameLength + 1);
+        when(mockRequest.getParameter("todoName")).thenReturn(validTodoName);
+
+        requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
+
+        verify(mockResponse).setStatus(HttpStatus.BAD_REQUEST.value()); // No error status set
+    }
+
+    @Test
+    public void testDoFilter_DeleteRequest_ShouldReturn() throws IOException, ServletException{
+        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/todo"));
+        when(mockRequest.getMethod()).thenReturn("DELETE");
+
+        String validTodoName = "s".repeat(GlobalDataHolder.maxTodoNameLength - 1);
+        when(mockRequest.getParameter("todoName")).thenReturn(validTodoName);
+
+        requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
+
+        verify(mockFilterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(mockResponse, never()).setStatus(anyInt()); // No error status set
+    }
+
+    @Test
+    public void testDoFilter_DeleteRequest_ShouldNotReturn() throws IOException, ServletException{
+        when(mockResponse.getWriter()).thenReturn(printWriter);
+
+        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/todo"));
+        when(mockRequest.getMethod()).thenReturn("DELETE");
+
+        String validTodoName = "s".repeat(GlobalDataHolder.maxTodoNameLength + 1);
+        when(mockRequest.getParameter("todoName")).thenReturn(validTodoName);
+
+        requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
+
+        verify(mockResponse).setStatus(HttpStatus.BAD_REQUEST.value()); // No error status set
+    }
+
+    @Test
+    public void testDoFilter_ShouldReturn_BadRequest() throws IOException, ServletException{
+        when(mockResponse.getWriter()).thenReturn(printWriter);
+
+        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/todo"));
+        when(mockRequest.getMethod()).thenReturn("ANY");
+
+        requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
+
+        verify(mockResponse).setStatus(HttpStatus.BAD_REQUEST.value());
     }
 }
