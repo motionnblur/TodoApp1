@@ -1,9 +1,7 @@
 package com.example.app.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -17,10 +15,12 @@ import java.util.List;
 @Builder
 public class TodoEntity {
     @Id
+    @Column(name = "todo_entity_id")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-
     private String todoName;
-    private List<String> todoItems;
-    private boolean isCompleted;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "todo_entity_id", referencedColumnName = "todo_entity_id")
+    private List<TodoItemEntity> todoItemEntities;
 }

@@ -9,5 +9,5 @@ import java.util.List;
 @Setter
 public class TodoEntityDto {
     private String name;
-    private List<String> items;
+    private List<TodoItemDto> items;
 }
