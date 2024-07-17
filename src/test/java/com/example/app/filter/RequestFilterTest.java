@@ -66,6 +66,12 @@ class RequestFilterTest {
     @Mock
     private SecurityHelper securityHelper;
 
+    @Mock
+    private HttpServletRequestHelper httpServletRequestHelper;
+
+    @Mock
+    private StringHelper stringHelper;
+
     @InjectMocks
     private RequestFilter requestFilter;
 
@@ -87,6 +93,20 @@ class RequestFilterTest {
         requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
 
         // Verify chain is called
+        verify(mockFilterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(mockResponse, never()).setStatus(anyInt()); // No error status set
+    }
+
+    @Test
+    public void testDoFilter_GetRequest_ShouldReturn() throws IOException, ServletException{
+        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/todo"));
+        when(mockRequest.getMethod()).thenReturn("GET");
+
+        String validTodoName = "s".repeat(GlobalDataHolder.maxTodoNameLength - 1);
+        when(mockRequest.getParameter("todoName")).thenReturn(validTodoName);
+
+        requestFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
+
         verify(mockFilterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(mockResponse, never()).setStatus(anyInt()); // No error status set
     }

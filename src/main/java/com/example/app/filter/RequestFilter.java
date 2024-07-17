@@ -72,11 +72,17 @@ public class RequestFilter implements Filter {
             res.setStatus(HttpStatus.BAD_REQUEST.value());
             res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
         }else if(req.getMethod().equals("GET") || req.getMethod().equals("DELETE")){
-            String queryStr = httpServletRequestHelper.getParameter("todoName");
-            System.out.println(queryStr);
+            StringHelper stringHelper = new StringHelper();
 
-            chain.doFilter(httpServletRequestHelper, response);
-            return;
+            String queryStr = httpServletRequestHelper.getParameter("todoName");
+            if(stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, queryStr.length()))
+            {
+                chain.doFilter(httpServletRequestHelper, response);
+                return;
+            }
+
+            res.setStatus(HttpStatus.BAD_REQUEST.value());
+            res.getWriter().write("Todo name can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
         }
 
         res.setStatus(HttpStatus.BAD_REQUEST.value());
