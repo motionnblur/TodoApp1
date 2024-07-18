@@ -69,4 +69,15 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/markItem")
+    private ResponseEntity<?> markItem(@RequestParam String todoName,
+                                       @RequestParam String todoItemToBeMarked,
+                                       @RequestParam boolean markBool){
+        try{
+            todoEntityService.markTodoItem(todoName, todoItemToBeMarked, markBool);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

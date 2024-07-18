@@ -36,23 +36,21 @@ public class RequestFilter implements Filter {
         String requestUrl = req.getRequestURL().toString();
 
         if(req.getMethod().equals("POST")){
-            if(requestUrl.equals("http://localhost:8080/todo")){
-                String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
-                TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
+            switch (requestUrl) {
+                case "http://localhost:8080/todo" -> {
+                    String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
+                    TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
 
-                if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
-                    chain.doFilter(httpServletRequestHelper, response);
-                    return;
+                    if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+                        chain.doFilter(httpServletRequestHelper, response);
+                        return;
+                    }
+
+                    res.setStatus(HttpStatus.BAD_REQUEST.value());
+                    res.getWriter().write("Todo or item name length can't be more than " + GlobalDataHolder.maxTodoNameLength + " !");
                 }
-
-                res.setStatus(HttpStatus.BAD_REQUEST.value());
-                res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
-            }else if(requestUrl.equals("http://localhost:8080/todo/addItem")){
-                chain.doFilter(httpServletRequestHelper, response);
-                return;
-            }else if(requestUrl.equals("http://localhost:8080/todo/deleteItem")){
-                chain.doFilter(httpServletRequestHelper, response);
-                return;
+                case "http://localhost:8080/todo/addItem", "http://localhost:8080/todo/deleteItem",
+                     "http://localhost:8080/todo/markItem" -> chain.doFilter(httpServletRequestHelper, response);
             }
         }else if(req.getMethod().equals("PUT")){
             if(!"application/json".equalsIgnoreCase(httpServletRequestHelper.getContentType())){
