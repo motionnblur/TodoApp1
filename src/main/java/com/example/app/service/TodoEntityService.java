@@ -99,4 +99,25 @@ public class TodoEntityService {
 
         todoEntityRepository.save(todoEntity);
     }
+    public void markTodoItem(String todoName, String todoItemToBeMarked, Boolean markBool) throws Exception {
+        TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
+        if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
+
+        List<TodoItemEntity> todoItemEntities = todoEntity.getTodoItemEntities();
+
+        int index = 0;
+        for(TodoItemEntity itemEntity : todoItemEntities){
+            String itemBody = itemEntity.getTodoBody();
+            if(itemBody.equals(todoItemToBeMarked)){
+                todoItemEntities.get(index).setCompleted(markBool);
+                todoEntityRepository.save(todoEntity);
+
+                return;
+            }
+
+            index++;
+        }
+
+        throw new Exception("A todo item with that name couldn't be found");
+    }
 }
