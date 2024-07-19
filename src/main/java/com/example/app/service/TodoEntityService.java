@@ -6,6 +6,8 @@ import com.example.app.entity.TodoEntity;
 import com.example.app.entity.TodoItemEntity;
 import com.example.app.repository.TodoEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +70,7 @@ public class TodoEntityService {
         
         return todoEntity;
     }
+    @CacheEvict("todoentity")
     public void addTodoItem(String todoName, String item) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
         if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
