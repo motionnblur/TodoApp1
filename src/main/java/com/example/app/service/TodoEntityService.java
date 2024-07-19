@@ -6,6 +6,7 @@ import com.example.app.entity.TodoEntity;
 import com.example.app.entity.TodoItemEntity;
 import com.example.app.repository.TodoEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class TodoEntityService {
 
         todoEntityRepository.save(todoEntityToUpdate);
     }
+    @Cacheable("todoentity")
     public TodoEntity getTodoEntity(String todoEntityName) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoEntityName);
         if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
