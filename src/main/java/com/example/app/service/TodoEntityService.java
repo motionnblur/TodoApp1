@@ -70,7 +70,7 @@ public class TodoEntityService {
         
         return todoEntity;
     }
-    @CacheEvict("todoentity")
+    @CacheEvict(value="todoentity", allEntries=true)
     public void addTodoItem(String todoName, String item) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
         if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
@@ -82,6 +82,7 @@ public class TodoEntityService {
         todoEntity.getTodoItemEntities().add(todoItemEntity);
         todoEntityRepository.save(todoEntity);
     }
+    @CacheEvict(value="todoentity", allEntries=true)
     public void deleteTodoItem(String todoName, String itemToDelete) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
         if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
@@ -104,6 +105,7 @@ public class TodoEntityService {
 
         todoEntityRepository.save(todoEntity);
     }
+    @CacheEvict(value="todoentity", allEntries=true)
     public void markTodoItem(String todoName, String todoItemToBeMarked, Boolean markBool) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
         if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
