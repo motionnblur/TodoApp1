@@ -11,6 +11,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
 public class RequestFilter implements Filter {
     @Autowired ReaderHelper readerHelper;
@@ -25,7 +27,7 @@ public class RequestFilter implements Filter {
     SecurityHelper securityHelper = new SecurityHelper();
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @Order(1)
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
@@ -49,7 +51,21 @@ public class RequestFilter implements Filter {
                     res.setStatus(HttpStatus.BAD_REQUEST.value());
                     res.getWriter().write("Todo or item name length can't be more than " + GlobalDataHolder.maxTodoNameLength + " !");
                 }
-                case "http://localhost:8080/todo/addItem", "http://localhost:8080/todo/deleteItem",
+                case "http://localhost:8080/todo/addItem" -> {
+                    String queryStr1 = httpServletRequestHelper.getParameter("todoName");
+                    String queryStr2 = httpServletRequestHelper.getParameter("item");
+
+                    if((!queryStr1.isEmpty() && !queryStr2.isEmpty()) &&
+                            (securityHelper.securityCheckString(queryStr1) && securityHelper.securityCheckString(queryStr2))) {
+                        chain.doFilter(httpServletRequestHelper, response);
+                        return;
+                    }
+
+                    res.addHeader("Access-Control-Allow-Origin", "*");
+                    res.setStatus(HttpStatus.BAD_REQUEST.value());
+                    res.getWriter().write("fields shouldn't be empty");
+                }
+                case "http://localhost:8080/todo/deleteItem",
                      "http://localhost:8080/todo/markItem" -> chain.doFilter(httpServletRequestHelper, response);
             }
         }else if(req.getMethod().equals("PUT")){

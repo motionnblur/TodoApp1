@@ -26,4 +26,7 @@ public class SecurityHelper {
 
         return true;
     }
+    public boolean securityCheckString(String str){
+        return stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoItemLength, str.length());
+    }
 }

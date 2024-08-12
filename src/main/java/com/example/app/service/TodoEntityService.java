@@ -1,5 +1,6 @@
 package com.example.app.service;
 
+import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
 import com.example.app.dto.TodoItemDto;
 import com.example.app.entity.TodoEntity;
@@ -74,6 +75,10 @@ public class TodoEntityService {
     public void addTodoItem(String todoName, String item) throws Exception {
         TodoEntity todoEntity = todoEntityRepository.findByTodoName(todoName);
         if(todoEntity == null) throw new Exception("A todo with that name couldn't be found");
+
+        int todoItemCount = todoEntity.getTodoItemEntities().size();
+        if(todoItemCount == GlobalDataHolder.maxTodoItemCount)
+            throw new Exception("Todo item count can not be more than "+GlobalDataHolder.maxTodoItemCount);
 
         TodoItemEntity todoItemEntity = new TodoItemEntity();
         todoItemEntity.setTodoBody(item);
