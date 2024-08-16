@@ -32,6 +32,15 @@ public class TodoEntityController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/getAllTodo")
+    private ResponseEntity<?> getAllTodo(){
+        try{
+            TodoEntity[] todoEntities = todoEntityService.getTodoEntities();
+            return new ResponseEntity<>(todoEntities, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
     @PostMapping
     private ResponseEntity<?> changeTodo(@RequestBody TodoEntityDto todoEntityDto){
         try{

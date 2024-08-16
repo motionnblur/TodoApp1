@@ -48,11 +48,11 @@ class TodoEntityServiceTest {
 
         TodoItemDto todoItemDto1 = new TodoItemDto();
         todoItemDto1.setTodoBody("Apple");
-        todoItemDto1.setHasCompleted(false);
+        todoItemDto1.setCompleted(false);
 
         TodoItemDto todoItemDto2 = new TodoItemDto();
         todoItemDto2.setTodoBody("Orange");
-        todoItemDto2.setHasCompleted(true);
+        todoItemDto2.setCompleted(true);
 
         todoItemDtos.add(todoItemDto1);
         todoItemDtos.add(todoItemDto2);
@@ -119,11 +119,11 @@ class TodoEntityServiceTest {
 
         TodoItemDto todoItemDto1 = new TodoItemDto();
         todoItemDto1.setTodoBody("Apple");
-        todoItemDto1.setHasCompleted(false);
+        todoItemDto1.setCompleted(false);
 
         TodoItemDto todoItemDto2 = new TodoItemDto();
         todoItemDto2.setTodoBody("Orange");
-        todoItemDto2.setHasCompleted(true);
+        todoItemDto2.setCompleted(true);
 
         todoItemDtos.add(todoItemDto1);
         todoItemDtos.add(todoItemDto2);

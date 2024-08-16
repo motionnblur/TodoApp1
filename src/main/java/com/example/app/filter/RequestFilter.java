@@ -85,7 +85,10 @@ public class RequestFilter implements Filter {
 
             res.setStatus(HttpStatus.BAD_REQUEST.value());
             res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
-        }else if(req.getMethod().equals("GET") || req.getMethod().equals("DELETE")){
+        }else if(req.getMethod().equals("GET") && requestUrl.equals("http://localhost:8080/todo/getAllTodo")){
+            chain.doFilter(httpServletRequestHelper, response);
+        }
+        else if(req.getMethod().equals("GET") || req.getMethod().equals("DELETE")){
             StringHelper stringHelper = new StringHelper();
 
             String queryStr = httpServletRequestHelper.getParameter("todoName");
@@ -97,7 +100,10 @@ public class RequestFilter implements Filter {
 
             res.setStatus(HttpStatus.BAD_REQUEST.value());
             res.getWriter().write("Todo name can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
-        }else {
+        }else if(req.getMethod().equals("OPTIONS")){
+            chain.doFilter(httpServletRequestHelper, response);
+        }
+        else {
             res.setStatus(HttpStatus.BAD_REQUEST.value());
             res.getWriter().write("Bad request");
         }

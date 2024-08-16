@@ -8,7 +8,6 @@ import com.example.app.entity.TodoItemEntity;
 import com.example.app.repository.TodoEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,18 @@ public class TodoEntityService {
     @Autowired
     protected TodoEntityRepository todoEntityRepository;
 
-    public TodoEntity saveTodoEntity(TodoEntityDto todoEntityDto){
+    public TodoEntity[] getTodoEntities() {
+        TodoEntity[] entities = todoEntityRepository.findAll().toArray(new TodoEntity[0]);
+        return entities;
+    }
+    @CacheEvict(value="todoentity", allEntries=true)
+    public TodoEntity saveTodoEntity(TodoEntityDto todoEntityDto) throws Exception {
+        TodoEntity entity = todoEntityRepository.findByTodoName(todoEntityDto.getName());
+        if(entity != null){
+            updateTodoEntity(todoEntityDto);
+            return entity;
+        }
+
         TodoEntity todoEntityTemp = new TodoEntity();
         List<TodoItemEntity> todoItemEntities = new ArrayList<>();
 
@@ -28,7 +38,7 @@ public class TodoEntityService {
             TodoItemEntity todoItemEntity = new TodoItemEntity();
 
             todoItemEntity.setTodoBody(dto.getTodoBody());
-            todoItemEntity.setCompleted(dto.isHasCompleted());
+            todoItemEntity.setCompleted(dto.isCompleted());
 
             todoItemEntities.add(todoItemEntity);
         }
@@ -54,7 +64,7 @@ public class TodoEntityService {
             TodoItemEntity todoItemEntity = new TodoItemEntity();
 
             todoItemEntity.setTodoBody(dto.getTodoBody());
-            todoItemEntity.setCompleted(dto.isHasCompleted());
+            todoItemEntity.setCompleted(dto.isCompleted());
 
             todoItemEntities.add(todoItemEntity);
         }
