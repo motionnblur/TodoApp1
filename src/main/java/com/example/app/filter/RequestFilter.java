@@ -2,6 +2,7 @@ package com.example.app.filter;
 
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
+import com.example.app.dto.UserEntityDto;
 import com.example.app.helper.HttpServletRequestHelper;
 import com.example.app.helper.ReaderHelper;
 import com.example.app.helper.SecurityHelper;
@@ -15,9 +16,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
-import java.util.List;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
@@ -69,23 +68,45 @@ public class RequestFilter implements Filter {
                      "http://localhost:8080/todo/markItem" -> chain.doFilter(httpServletRequestHelper, response);
             }
         }else if(req.getMethod().equals("PUT")){
-            if(!"application/json".equalsIgnoreCase(httpServletRequestHelper.getContentType())){
-                res.setStatus(HttpStatus.BAD_REQUEST.value());
-                res.getWriter().write("should have application/json");
-                return;
+            switch (requestUrl){
+                case "http://localhost:8080/user" -> {
+                    StringHelper stringHelper = new StringHelper();
+
+                    String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
+                    UserEntityDto userEntityDto = objectMapper.readValue(requestBodyAsString, UserEntityDto.class);
+                    String userName = userEntityDto.getName();
+
+                    if(stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxUserNameLength, userName.length()))
+                    {
+                        chain.doFilter(httpServletRequestHelper, response);
+                        return;
+                    }
+
+                    res.setStatus(HttpStatus.BAD_REQUEST.value());
+                    res.getWriter().write("User name can't be more than "+ GlobalDataHolder.maxUserNameLength +" !");
+                }
+                case "http://localhost:8080/todo" -> {
+                    if(!"application/json".equalsIgnoreCase(httpServletRequestHelper.getContentType())){
+                        res.setStatus(HttpStatus.BAD_REQUEST.value());
+                        res.getWriter().write("should have application/json");
+                        return;
+                    }
+
+                    String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
+                    TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
+
+                    if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+                        chain.doFilter(httpServletRequestHelper, response);
+                        return;
+                    }
+
+                    res.setStatus(HttpStatus.BAD_REQUEST.value());
+                    res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
+                }
             }
-
-            String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
-            TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
-
-            if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
-                chain.doFilter(httpServletRequestHelper, response);
-                return;
-            }
-
-            res.setStatus(HttpStatus.BAD_REQUEST.value());
-            res.getWriter().write("Todo or item name length can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
         }else if(req.getMethod().equals("GET") && requestUrl.equals("http://localhost:8080/todo/getAllTodo")){
+            chain.doFilter(httpServletRequestHelper, response);
+        }else if(req.getMethod().equals("GET") && requestUrl.equals("http://localhost:8080/user")){
             chain.doFilter(httpServletRequestHelper, response);
         }
         else if(req.getMethod().equals("GET") || req.getMethod().equals("DELETE")){
