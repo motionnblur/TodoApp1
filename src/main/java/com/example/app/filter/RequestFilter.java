@@ -50,6 +50,7 @@ public class RequestFilter implements Filter {
             case "POST" -> handlePost();
             case "PUT" -> handlePut();
             case "GET" -> handleGet();
+            case "DELETE" -> handleDelete();
         }
     }
 
@@ -148,5 +149,18 @@ public class RequestFilter implements Filter {
             res.setStatus(HttpStatus.BAD_REQUEST.value());
             res.getWriter().write("Bad request");
         }
+    }
+    private void handleDelete() throws ServletException, IOException {
+        StringHelper stringHelper = new StringHelper();
+
+        String queryStr = httpServletRequestHelper.getParameter("todoName");
+        if(stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, queryStr.length()))
+        {
+            chain.doFilter(httpServletRequestHelper, response);
+            return;
+        }
+
+        res.setStatus(HttpStatus.BAD_REQUEST.value());
+        res.getWriter().write("Todo name can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
     }
 }
