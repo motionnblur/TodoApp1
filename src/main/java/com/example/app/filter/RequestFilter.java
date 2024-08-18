@@ -51,6 +51,10 @@ public class RequestFilter implements Filter {
             case "PUT" -> handlePut();
             case "GET" -> handleGet();
             case "DELETE" -> handleDelete();
+            default -> {
+                res.setStatus(HttpStatus.BAD_REQUEST.value());
+                res.getWriter().write("Bad request");
+            }
         }
     }
 
@@ -125,29 +129,21 @@ public class RequestFilter implements Filter {
         }
     }
     private void handleGet() throws ServletException, IOException {
-        if(req.getMethod().equals("GET") && requestUrl.equals("http://localhost:8080/todo/getAllTodo")){
-            chain.doFilter(httpServletRequestHelper, response);
-        }else if(req.getMethod().equals("GET") && requestUrl.equals("http://localhost:8080/user")){
-            chain.doFilter(httpServletRequestHelper, response);
-        }
-        else if(req.getMethod().equals("GET") || req.getMethod().equals("DELETE")){
-            StringHelper stringHelper = new StringHelper();
+        switch(requestUrl) {
+            case "http://localhost:8080/user", "http://localhost:8080/todo/getAllTodo" -> chain.doFilter(httpServletRequestHelper, response);
+            default -> {
+                StringHelper stringHelper = new StringHelper();
 
-            String queryStr = httpServletRequestHelper.getParameter("todoName");
-            if(stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, queryStr.length()))
-            {
-                chain.doFilter(httpServletRequestHelper, response);
-                return;
+                String queryStr = httpServletRequestHelper.getParameter("todoName");
+                if(stringHelper.checkIfStringLengthLessThan(GlobalDataHolder.maxTodoNameLength, queryStr.length()))
+                {
+                    chain.doFilter(httpServletRequestHelper, response);
+                    return;
+                }
+
+                res.setStatus(HttpStatus.BAD_REQUEST.value());
+                res.getWriter().write("Todo name can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
             }
-
-            res.setStatus(HttpStatus.BAD_REQUEST.value());
-            res.getWriter().write("Todo name can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
-        }else if(req.getMethod().equals("OPTIONS")){
-            chain.doFilter(httpServletRequestHelper, response);
-        }
-        else {
-            res.setStatus(HttpStatus.BAD_REQUEST.value());
-            res.getWriter().write("Bad request");
         }
     }
     private void handleDelete() throws ServletException, IOException {
