@@ -25,61 +25,34 @@ public class RequestFilter implements Filter {
 
     SecurityHelper securityHelper = new SecurityHelper();
     ObjectMapper objectMapper = new ObjectMapper();
+    HttpServletRequestHelper httpServletRequestHelper;
+    HttpServletRequest req;
+    HttpServletResponse res;
+    String requestUrl;
+
+    FilterChain chain;
+    ServletResponse response;
 
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse res = (HttpServletResponse) response;
-        // The important part!! wrap the request:
-        HttpServletRequestHelper httpServletRequestHelper = new HttpServletRequestHelper(req);
+        this.chain = chain;
+        this.response = response;
 
-        String requestUrl = req.getRequestURL().toString();
+        this.req = (HttpServletRequest) request;
+        this.res = (HttpServletResponse) response;
+        // The important part!! wrap the request:
+        this.httpServletRequestHelper = new HttpServletRequestHelper(req);
+
+        this.requestUrl = req.getRequestURL().toString();
 
         switch(req.getMethod()) {
-            case "POST" -> {
-
-            }
-            case "PUT" -> {
-
-            }
-            case "GET" -> {
-
-            }
+            case "POST" -> handlePost();
+            case "PUT" -> handlePut();
+            case "GET" -> handleGet();
         }
-        
-        if(req.getMethod().equals("POST")){
-            switch (requestUrl) {
-                case "http://localhost:8080/todo" -> {
-                    String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
-                    TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
 
-                    if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
-                        chain.doFilter(httpServletRequestHelper, response);
-                        return;
-                    }
-
-                    res.setStatus(HttpStatus.BAD_REQUEST.value());
-                    res.getWriter().write("Todo or item name length can't be more than " + GlobalDataHolder.maxTodoNameLength + " !");
-                }
-                case "http://localhost:8080/todo/addItem" -> {
-                    String queryStr1 = httpServletRequestHelper.getParameter("todoName");
-                    String queryStr2 = httpServletRequestHelper.getParameter("item");
-
-                    if((!queryStr1.isEmpty() && !queryStr2.isEmpty()) &&
-                            (securityHelper.securityCheckString(queryStr1) && securityHelper.securityCheckString(queryStr2))) {
-                        chain.doFilter(httpServletRequestHelper, response);
-                        return;
-                    }
-
-                    res.addHeader("Access-Control-Allow-Origin", "*");
-                    res.setStatus(HttpStatus.BAD_REQUEST.value());
-                    res.getWriter().write("fields shouldn't be empty");
-                }
-                case "http://localhost:8080/todo/deleteItem",
-                     "http://localhost:8080/todo/markItem" -> chain.doFilter(httpServletRequestHelper, response);
-            }
-        }else if(req.getMethod().equals("PUT")){
+        if(req.getMethod().equals("PUT")){
             switch (requestUrl){
                 case "http://localhost:8080/user" -> {
                     StringHelper stringHelper = new StringHelper();
@@ -140,5 +113,44 @@ public class RequestFilter implements Filter {
             res.setStatus(HttpStatus.BAD_REQUEST.value());
             res.getWriter().write("Bad request");
         }
+    }
+
+    private void handlePost() throws ServletException, IOException {
+        switch (requestUrl) {
+            case "http://localhost:8080/todo" -> {
+                String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
+                TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
+
+                if (securityHelper.securityCheckTodoEntity(todoEntityDto)) {
+                    chain.doFilter(httpServletRequestHelper, response);
+                    return;
+                }
+
+                res.setStatus(HttpStatus.BAD_REQUEST.value());
+                res.getWriter().write("Todo or item name length can't be more than " + GlobalDataHolder.maxTodoNameLength + " !");
+            }
+            case "http://localhost:8080/todo/addItem" -> {
+                String queryStr1 = httpServletRequestHelper.getParameter("todoName");
+                String queryStr2 = httpServletRequestHelper.getParameter("item");
+
+                if((!queryStr1.isEmpty() && !queryStr2.isEmpty()) &&
+                        (securityHelper.securityCheckString(queryStr1) && securityHelper.securityCheckString(queryStr2))) {
+                    chain.doFilter(httpServletRequestHelper, response);
+                    return;
+                }
+
+                res.addHeader("Access-Control-Allow-Origin", "*");
+                res.setStatus(HttpStatus.BAD_REQUEST.value());
+                res.getWriter().write("fields shouldn't be empty");
+            }
+            case "http://localhost:8080/todo/deleteItem",
+                 "http://localhost:8080/todo/markItem" -> chain.doFilter(httpServletRequestHelper, response);
+        }
+    }
+    private void handlePut() {
+
+    }
+    private void handleGet() {
+
     }
 }
