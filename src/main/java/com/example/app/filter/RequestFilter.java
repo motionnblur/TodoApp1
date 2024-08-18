@@ -36,6 +36,18 @@ public class RequestFilter implements Filter {
 
         String requestUrl = req.getRequestURL().toString();
 
+        switch(req.getMethod()) {
+            case "POST" -> {
+
+            }
+            case "PUT" -> {
+
+            }
+            case "GET" -> {
+
+            }
+        }
+        
         if(req.getMethod().equals("POST")){
             switch (requestUrl) {
                 case "http://localhost:8080/todo" -> {
