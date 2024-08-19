@@ -14,7 +14,7 @@ public class UserController {
     @Autowired
     protected UserEntityService userEntityService;
 
-    @PutMapping
+    @PutMapping("/signup")
     private ResponseEntity<?> addUser(@RequestBody UserEntityDto userEntityDto) {
         try{
             UserEntity userEntitySaved = userEntityService.saveUserEntity(userEntityDto);
@@ -23,7 +23,7 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping
+    @PostMapping("/login")
     private ResponseEntity<?> loginUser(@RequestBody UserEntityDto userEntityDto) {
         try{
             userEntityService.loginUser(userEntityDto);

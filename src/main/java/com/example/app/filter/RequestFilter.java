@@ -65,7 +65,7 @@ public class RequestFilter implements Filter {
 
     private void handlePost() throws ServletException, IOException {
         switch (requestUrl) {
-            case "http://localhost:8080/user" -> chain.doFilter(httpServletRequestHelper, response);
+            case "http://localhost:8080/user/login" -> chain.doFilter(httpServletRequestHelper, response);
             case "http://localhost:8080/todo" -> {
                 String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
                 TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);
@@ -98,7 +98,7 @@ public class RequestFilter implements Filter {
     }
     private void handlePut() throws ServletException, IOException {
         switch (requestUrl){
-            case "http://localhost:8080/user" -> {
+            case "http://localhost:8080/user/signup" -> {
                 StringHelper stringHelper = new StringHelper();
 
                 String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
