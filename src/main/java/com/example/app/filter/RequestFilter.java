@@ -47,6 +47,7 @@ public class RequestFilter implements Filter {
         this.requestUrl = req.getRequestURL().toString();
 
         switch(req.getMethod()) {
+            case "OPTIONS" -> handleOptions();
             case "POST" -> handlePost();
             case "PUT" -> handlePut();
             case "GET" -> handleGet();
@@ -58,8 +59,13 @@ public class RequestFilter implements Filter {
         }
     }
 
+    private void handleOptions() throws ServletException, IOException {
+        chain.doFilter(httpServletRequestHelper, response);
+    }
+
     private void handlePost() throws ServletException, IOException {
         switch (requestUrl) {
+            case "http://localhost:8080/user" -> chain.doFilter(httpServletRequestHelper, response);
             case "http://localhost:8080/todo" -> {
                 String requestBodyAsString = readerHelper.getStringFromInputStream(httpServletRequestHelper);
                 TodoEntityDto todoEntityDto = objectMapper.readValue(requestBodyAsString, TodoEntityDto.class);

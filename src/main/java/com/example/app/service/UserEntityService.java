@@ -25,4 +25,10 @@ public class UserEntityService {
 
         return userEntityRepository.save(userEntityTemp);
     }
+
+    public void loginUser(UserEntityDto userEntityDto) throws Exception {
+        UserEntity userEntity = userEntityRepository.findByUserName(userEntityDto.getName());
+        if(userEntity == null || !userEntity.getUserPassword().equals(userEntityDto.getPassword()))
+            throw new Exception("Login error");
+    }
 }
