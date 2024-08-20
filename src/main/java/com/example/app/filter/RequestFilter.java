@@ -9,6 +9,7 @@ import com.example.app.helper.SecurityHelper;
 import com.example.app.helper.StringHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,23 +47,35 @@ public class RequestFilter implements Filter {
 
         this.requestUrl = req.getRequestURL().toString();
 
+//        Cookie[] cookies = ((HttpServletRequest) request).getCookies();
+//        String cookieValue = null;
+//
+//        if(cookies != null) {
+//            for(Cookie c : cookies){
+//                String cookieName = c.getName();
+//                if(cookieName.equals("SESSION_ID")){
+//                    cookieValue = c.getValue();
+//                    break;
+//                }
+//            }
+//        }
+//        if(cookieValue != null) {
+//
+//        }
+
         switch(req.getMethod()) {
             case "OPTIONS" -> handleOptions();
             case "POST" -> handlePost();
             case "PUT" -> handlePut();
             case "GET" -> handleGet();
             case "DELETE" -> handleDelete();
-            default -> {
-                res.setStatus(HttpStatus.BAD_REQUEST.value());
-                res.getWriter().write("Bad request");
-            }
+            default -> handleDefault();
         }
     }
 
     private void handleOptions() throws ServletException, IOException {
         chain.doFilter(httpServletRequestHelper, response);
     }
-
     private void handlePost() throws ServletException, IOException {
         switch (requestUrl) {
             case "http://localhost:8080/user/login" -> chain.doFilter(httpServletRequestHelper, response);
@@ -136,7 +149,7 @@ public class RequestFilter implements Filter {
     }
     private void handleGet() throws ServletException, IOException {
         switch(requestUrl) {
-            case "http://localhost:8080/user", "http://localhost:8080/todo/getAllTodo" -> chain.doFilter(httpServletRequestHelper, response);
+            case "http://localhost:8080/user", "http://localhost:8080/user/auth", "http://localhost:8080/todo/getAllTodo" -> chain.doFilter(httpServletRequestHelper, response);
             default -> {
                 StringHelper stringHelper = new StringHelper();
 
@@ -164,5 +177,9 @@ public class RequestFilter implements Filter {
 
         res.setStatus(HttpStatus.BAD_REQUEST.value());
         res.getWriter().write("Todo name can't be more than "+ GlobalDataHolder.maxTodoNameLength +" !");
+    }
+    private void handleDefault() throws ServletException, IOException {
+        res.setStatus(HttpStatus.BAD_REQUEST.value());
+        res.getWriter().write("Bad request");
     }
 }
