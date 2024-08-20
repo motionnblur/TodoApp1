@@ -69,4 +69,23 @@ public class UserEntityService {
         String userName = authHelper.getUserNameFromAuthList(cookieValue);
         if(userName == null) throw new Exception("Auth error");
     }
+
+    public String getUserName(HttpServletRequest request) throws Exception {
+        Cookie[] cookies = request.getCookies();
+        String cookieValue = null;
+
+        if(cookies == null) throw new Exception("Auth error");
+        for(Cookie c : cookies){
+            String cookieName = c.getName();
+            if(cookieName.equals("SESSION_ID")){
+                cookieValue = c.getValue();
+                break;
+            }
+        }
+        if(cookieValue == null) throw new Exception("Auth error");
+        String userName = authHelper.getUserNameFromAuthList(cookieValue);
+        if(userName == null) throw new Exception("Auth error");
+
+        return userName;
+    }
 }
