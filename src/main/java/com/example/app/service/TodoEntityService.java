@@ -48,12 +48,16 @@ public class TodoEntityService {
 
         return todoEntityRepository.save(todoEntityTemp);
     }
+
+    @CacheEvict(value="todoentity", allEntries=true)
     public TodoEntity deleteTodoEntity(String todoEntityName){
         TodoEntity todoEntityToDelete = todoEntityRepository.findByTodoName(todoEntityName);
         todoEntityRepository.delete(todoEntityToDelete);
 
         return todoEntityToDelete;
     }
+
+    @CacheEvict(value="todoentity", allEntries=true)
     public void updateTodoEntity(TodoEntityDto todoEntityDto) throws Exception {
         TodoEntity todoEntityToUpdate = todoEntityRepository.findByTodoName(todoEntityDto.getName());
         if(todoEntityToUpdate == null) throw new Exception("Todo to delete couldn't be found");
