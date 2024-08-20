@@ -28,6 +28,16 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/userName")
+    private ResponseEntity<?> getUserName(HttpServletRequest request){
+        try{
+            userEntityService.authUser(request);
+            String userName = userEntityService.getUserName(request);
+            return new ResponseEntity<>(userName, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
     @PutMapping("/signup")
     private ResponseEntity<?> addUser(@RequestBody UserEntityDto userEntityDto) {
         try{

@@ -149,7 +149,9 @@ public class RequestFilter implements Filter {
     }
     private void handleGet() throws ServletException, IOException {
         switch(requestUrl) {
-            case "http://localhost:8080/user", "http://localhost:8080/user/auth", "http://localhost:8080/todo/getAllTodo" -> chain.doFilter(httpServletRequestHelper, response);
+            case "http://localhost:8080/user/auth",
+                 "http://localhost:8080/todo/getAllTodo",
+                 "http://localhost:8080/user/userName"-> chain.doFilter(httpServletRequestHelper, response);
             default -> {
                 StringHelper stringHelper = new StringHelper();
 
