@@ -62,10 +62,11 @@ public class UserEntityService {
             String cookieName = c.getName();
             if(cookieName.equals("SESSION_ID")){
                 cookieValue = c.getValue();
+                if(cookieValue == null || cookieValue.equals("undefined")) throw new Exception("Auth error");
+
                 break;
             }
         }
-        if(cookieValue == null) throw new Exception("Auth error");
         String userName = authHelper.getUserNameFromAuthList(cookieValue);
         if(userName == null) throw new Exception("Auth error");
     }
