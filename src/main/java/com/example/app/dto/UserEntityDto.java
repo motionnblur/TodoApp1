@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TodoItemDto {
-    private String todoBody;
-    private boolean completed;
+public class UserEntityDto {
+    private String name;
+    private String password;
 }

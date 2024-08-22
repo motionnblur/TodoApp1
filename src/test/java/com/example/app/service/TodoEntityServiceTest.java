@@ -48,11 +48,11 @@ class TodoEntityServiceTest {
 
         TodoItemDto todoItemDto1 = new TodoItemDto();
         todoItemDto1.setTodoBody("Apple");
-        todoItemDto1.setHasCompleted(false);
+        todoItemDto1.setCompleted(false);
 
         TodoItemDto todoItemDto2 = new TodoItemDto();
         todoItemDto2.setTodoBody("Orange");
-        todoItemDto2.setHasCompleted(true);
+        todoItemDto2.setCompleted(true);
 
         todoItemDtos.add(todoItemDto1);
         todoItemDtos.add(todoItemDto2);
@@ -119,11 +119,11 @@ class TodoEntityServiceTest {
 
         TodoItemDto todoItemDto1 = new TodoItemDto();
         todoItemDto1.setTodoBody("Apple");
-        todoItemDto1.setHasCompleted(false);
+        todoItemDto1.setCompleted(false);
 
         TodoItemDto todoItemDto2 = new TodoItemDto();
         todoItemDto2.setTodoBody("Orange");
-        todoItemDto2.setHasCompleted(true);
+        todoItemDto2.setCompleted(true);
 
         todoItemDtos.add(todoItemDto1);
         todoItemDtos.add(todoItemDto2);
@@ -192,5 +192,34 @@ class TodoEntityServiceTest {
 
         TodoEntity todoEntity = todoEntityService.getTodoEntity(todoEntityToBeSaved.getTodoName());
         assertEquals(todoEntity.getTodoItemEntities().get(2).getTodoBody(), itemToBeAdded);
+    }
+
+    @Test
+    void markTodoItem() throws Exception {
+        TodoItemEntity todoItemEntity1 = new TodoItemEntity();
+        todoItemEntity1.setTodoBody("Apple");
+        todoItemEntity1.setCompleted(false);
+
+        TodoItemEntity todoItemEntity2 = new TodoItemEntity();
+        todoItemEntity2.setTodoBody("Orange");
+        todoItemEntity2.setCompleted(false);
+
+        List<TodoItemEntity> todoItemEntities = new ArrayList<>();
+        todoItemEntities.add(todoItemEntity1);
+        todoItemEntities.add(todoItemEntity2);
+
+        TodoEntity todoEntityToBeSaved = new TodoEntity();
+        todoEntityToBeSaved.setTodoName("Todo1");
+        todoEntityToBeSaved.setTodoItemEntities(todoItemEntities);
+
+        when(todoEntityRepository.findByTodoName(anyString())).thenReturn(todoEntityToBeSaved);
+
+        todoEntityService.markTodoItem("Todo1", "Apple", true);
+        verify(todoEntityRepository).save(any(TodoEntity.class));
+
+        TodoEntity todoEntity = todoEntityService.getTodoEntity("Todo1");
+        Boolean todoItemMark = todoEntity.getTodoItemEntities().get(0).isCompleted();
+
+        assertEquals(true, todoItemMark);
     }
 }

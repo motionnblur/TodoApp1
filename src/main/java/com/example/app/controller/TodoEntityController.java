@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("todo")
 public class TodoEntityController {
@@ -29,6 +31,15 @@ public class TodoEntityController {
             TodoEntity todoEntity = todoEntityService.getTodoEntity(todoName);
             return new ResponseEntity<>(todoEntity, HttpStatus.OK);
         }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/getAllTodo")
+    private ResponseEntity<?> getAllTodo(){
+        try{
+            List<TodoEntity> todoEntities = todoEntityService.getTodoEntities();
+            return new ResponseEntity<>(todoEntities, HttpStatus.OK);
+        }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -64,6 +75,17 @@ public class TodoEntityController {
     private ResponseEntity<?> deleteItem(@RequestParam String todoName, @RequestParam String item){
         try{
             todoEntityService.deleteTodoItem(todoName, item);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/markItem")
+    private ResponseEntity<?> markItem(@RequestParam String todoName,
+                                       @RequestParam String todoItemToBeMarked,
+                                       @RequestParam boolean markBool){
+        try{
+            todoEntityService.markTodoItem(todoName, todoItemToBeMarked, markBool);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

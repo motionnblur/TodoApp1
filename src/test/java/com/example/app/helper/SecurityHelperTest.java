@@ -3,9 +3,6 @@ package com.example.app.helper;
 import com.example.app.config.GlobalDataHolder;
 import com.example.app.dto.TodoEntityDto;
 import com.example.app.dto.TodoItemDto;
-import com.example.app.entity.TodoEntity;
-import com.example.app.entity.TodoItemEntity;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -29,21 +26,21 @@ class SecurityHelperTest {
 
         for(int l = 0; l < GlobalDataHolder.maxTodoItemCount-1; l++){
             TodoItemDto todoItemDto = new TodoItemDto();
-            todoItemDto.setHasCompleted(false);
+            todoItemDto.setCompleted(false);
             todoItemDto.setTodoBody("s".repeat(GlobalDataHolder.maxTodoNameLength-1));
 
             todoListThatHasLengthLessThanMax.add(todoItemDto);
         }
         for(int l = 0; l < GlobalDataHolder.maxTodoItemCount; l++){
             TodoItemDto todoItemDto = new TodoItemDto();
-            todoItemDto.setHasCompleted(false);
+            todoItemDto.setCompleted(false);
             todoItemDto.setTodoBody("s".repeat(GlobalDataHolder.maxTodoNameLength));
 
             todoListThatHasLengthEqualsToMax.add(todoItemDto);
         }
         for(int l = 0; l < GlobalDataHolder.maxTodoItemCount+1; l++){
             TodoItemDto todoItemDto = new TodoItemDto();
-            todoItemDto.setHasCompleted(false);
+            todoItemDto.setCompleted(false);
             todoItemDto.setTodoBody("s".repeat(GlobalDataHolder.maxTodoNameLength+1));
 
             todoListThatHasLengthMoreThanMax.add(todoItemDto);
