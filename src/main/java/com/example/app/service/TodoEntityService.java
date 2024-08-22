@@ -19,8 +19,11 @@ public class TodoEntityService {
     @Autowired
     protected TodoEntityRepository todoEntityRepository;
 
-    public TodoEntity[] getTodoEntities() {
-        TodoEntity[] entities = todoEntityRepository.findAll().toArray(new TodoEntity[0]);
+    @Cacheable("todoentity")
+    public List<TodoEntity> getTodoEntities() throws Exception {
+        List<TodoEntity> entities = todoEntityRepository.findAll();
+        if(entities.isEmpty()) throw new Exception("Error");
+
         return entities;
     }
     @CacheEvict(value="todoentity", allEntries=true)

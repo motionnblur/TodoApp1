@@ -9,6 +9,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,13 +22,14 @@ public class UserEntityService {
     @Autowired
     protected AuthHelper authHelper;
 
-    public UserEntity getUserEntity(String userName) throws Exception {
-        UserEntity userEntity = userEntityRepository.findByUserName(userName);
-        if(userEntity == null) throw new Exception("A todo with that name couldn't be found");
+//    public UserEntity getUserEntity(String userName) throws Exception {
+//        UserEntity userEntity = userEntityRepository.findByUserName(userName);
+//        if(userEntity == null) throw new Exception("A todo with that name couldn't be found");
+//
+//        return userEntity;
+//    }
 
-        return userEntity;
-    }
-
+    @CacheEvict(value="userentity", allEntries=true)
     public UserEntity saveUserEntity(UserEntityDto userEntityDto) {
         UserEntity userEntityTemp = new UserEntity();
         userEntityTemp.setUserName(userEntityDto.getName());
@@ -35,6 +38,7 @@ public class UserEntityService {
         return userEntityRepository.save(userEntityTemp);
     }
 
+    @CacheEvict(value="userentity", allEntries=true)
     public void loginUser(HttpServletResponse response, UserEntityDto userEntityDto) throws Exception {
         UserEntity userEntity = userEntityRepository.findByUserName(userEntityDto.getName());
         if(userEntity == null) throw new Exception("Login error");
@@ -71,6 +75,7 @@ public class UserEntityService {
         if(userName == null) throw new Exception("Auth error");
     }
 
+    @Cacheable("userentity")
     public String getUserName(HttpServletRequest request) throws Exception {
         Cookie[] cookies = request.getCookies();
         String cookieValue = null;
